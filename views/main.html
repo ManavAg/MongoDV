@@ -1,0 +1,122 @@
+<html>
+<head>
+<script src="/public/Scripts/jquery-1.11.0.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+<script>
+	$( document ).ready(function() {
+		 $(".dataset").hide();
+		 $("#newradio").hide();
+		 $("#inputs").hide(); 
+	});
+	
+	function ShowRadio(a,b,c) { //a: radio buttons on data values b: New radio button c: Show input name and value fields
+		if(a==1){
+			$(".dataset").show(); 
+			if(b==1)
+				$("#newradio").show();
+			else $("#newradio").hide();
+		}
+		else {$(".dataset").hide(); $("#newradio").hide();}
+		if (c==1)
+			{
+			$("#inputs").show(); 
+			}
+		else
+			$("#inputs").hide(); 
+		
+	}
+</script>
+</head>
+<body style="background-color:#E6E6FA">
+<div class="navbar navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                data-target=".navbar-collapse">
+                <span class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#" style="color:#FFF">MongoDV</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li id="home"><a>MongoDB Database Visualizer</a></li>
+				<li id="about"><a href="http://www.manavagarwal.net">About Me</a></li>
+            </ul>
+        </div>
+        <!--/.navbar-collapse -->
+    </div>
+</div>
+	<form method="post" id="dbform">
+		<div class="container-fluid">
+			<div class="row">
+				<input class="form-control" type="text" placeholder="Write MongoDB URL here and Press Submit" name = "MDB" size='40' value= {{MDB}}>
+					<center><br>
+					<select name= "collection" class="form-control" value="{{Collection}}"  placeholder="Database Collections will be here">
+						{% for col in collections %}
+							{% if (Collection == col.name.substr(1+col.name.indexOf('.'))) %}
+								<option  value="{{col.name.substr(1+col.name.indexOf('.'))}}" selected>{{col.name.substr(1+col.name.indexOf('.'))}}</option>
+							{% endif %}
+							{% if (col != Collection) %}
+								<option  value="{{col.name.substr(1+col.name.indexOf('.'))}}">{{col.name.substr(1+col.name.indexOf('.'))}}</option>
+							{% endif %}
+						{% endfor %}
+					</select><br>
+					<div class="btn-group col-md-12" data-toggle="buttons">
+						<label class="btn btn-primary col-md-3">
+							<input type="radio" id="ShowAll" name="action" value="Show" onchange="ShowRadio(0,0,0)" onclick="$('#dbform').submit()" checked>Show All
+						</label>
+						<label class="btn btn-success col-md-3">
+							<input type="radio" name="action" value="Insert" onchange="ShowRadio(1,1,1)">Insert
+						</label>
+						<label class="btn btn-info col-md-3">
+							<input type="radio" name="action" value="Remove" onchange="ShowRadio(1,0,0)">Remove
+						</label>
+						<label class="btn btn-warning col-md-3">
+							<input type="radio" name="action" value="Search" onchange="ShowRadio(0,0,1)">Search
+						</label>
+					</div><br>
+				<div id="inputs" style="width:30%;">
+					<input type="text" style="display:inline-block" class="form-control" name = "name" placeholder="Key">
+					<input type="text" style="display:inline-block" class="form-control" name = "value" placeholder="Enter Value">
+				</div><br>
+				<button type="submit" class="btn btn-danger btn-lg">Submit</button>
+				<h2>Database</h2>
+				{% set i = 0 %}
+				<div id="newradio"><input type="radio" class="dataset" name="dataset" value="new" checked>New</div>
+				{% for data2 in data1 %}
+					{% set j = 0 %}
+					<div class="panel-group" id="accordion">
+							  <div class="panel panel-default">
+								{% for data3 in data2 %}
+									{% if j==1 %}
+										<div class="panel-heading">
+											<h4 class="panel-title">
+												<input type="radio" class="dataset" name="dataset" value="{{i}}"> 
+												<a data-toggle="collapse" data-parent="#accordion" href="#collapse{{i}}">
+													{% if j==1 %}
+														{{Object.keys(data2)[j]}} : {{ data3 }}
+													{% endif %}
+												</a>
+											</h4>
+										</div>
+										<div id="collapse{{i}}" class="panel-collapse collapse">
+											<div class="panel-body">
+									{% endif %}
+									{% if j>1 %}
+										<li>{{Object.keys(data2)[j]}} : {{ data3 }}</li>
+									{% endif %}
+									{% set j = j + 1 %}
+								{% endfor %}
+											</div>
+										</div>
+							  </div>
+					</div>
+				{% set i=i+1 %}	
+				{% endfor %}
+			</div>
+		</div>	</center>
+	</form>
+</body>
+</html>
